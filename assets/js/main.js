@@ -26,10 +26,29 @@ const number9El = document.querySelector('.number-9');
     const numberElArray = [ number0El, number1El, number2El, number3El, number4El, 
     number5El, number6El, number7El, number8El, number9El ];
 
+//add eventlisteners to numbers
+
+    for (let i = 0; i < numberElArray.length; i++){ 
+    const numberEl = numberElArray[i]; 
+    numberEl.addEventListener('click', () => {
+        display(i.toString());
+    } )
+}
+
+//add eventlistener to decimal
+decimalEl.addEventListener('click', () => { 
+    const displayValue = getStrValue(); 
+
+    if(!displayValue.includes('.')){
+        setStrValue(displayValue + '.');
+    }
+})
+
     let getStrValue = () => valueEl.textContent.split(',').join('');
     let getValueNum = () =>{ 
         return parseFloat(getStrValue());
     }
+    
 //add event listener keydown to accept input with the keyboard;
 window.addEventListener('keydown', (a) => { 
    if(a.key == '0'){ 
@@ -103,7 +122,7 @@ let divide = (a, b) => {
 }
 
 let resultOfOperationAsStr = ()=>{ 
-
+    let resultStr;
     const displayValueNum = getValueNum();
     const valueInMemory = parseFloat(valueStrMemory); 
 
@@ -112,12 +131,19 @@ let resultOfOperationAsStr = ()=>{
     }else if(operatorMemory === 'subtraction'){
         result = operate( valueInMemory, displayValueNum, 'subtraction');
     } else if(operatorMemory === 'multiplication'){
-        result = operate(valueInMemory, displayValueNum,  'multiplication');
+        result = operate(valueInMemory, displayValueNum,  'multiplication');        
     } else if (operatorMemory === 'divide'){ 
         result = roundUp(operate(  valueInMemory, displayValueNum,  'divide'), 7);
         } 
-    return  result.toString();
+               
+    resultStr =  result.toString();
+        if (resultStr.length > 9){ 
+           return resultStr.substring(0, 11)
+        } else { 
+             return resultStr;
+           }
 }
+
 
 let operate = (x, y, op) =>{ 
     
@@ -128,13 +154,13 @@ let operate = (x, y, op) =>{
     } else if(op === 'multiplication'){
         return multiplication( x, y); 
     } else if (op === 'divide'){
-        if( y === 0){
-            return 'funky';
-        } else{ 
-         return divide (x, y);    
+        if (y === 0){ 
+            return 'infinity';
+        }
+                    return divide (x, y);    
         }    
     }
-}
+
 
 const operatorClick = (operation) => { 
     const displayValue = getStrValue(); 
@@ -169,18 +195,14 @@ for( let i = 0; i < operators.length; i++){
             operatorClick('divide'); 
         }
         else if(operators[i].classList.contains('equal')){
-            
-            if(valueStrMemory){ 
-               setStrValue(resultOfOperationAsStr());
-                valueStrMemory = null; 
-                operatorMemory = null;
-            } 
+                if(valueStrMemory){ 
+                    setStrValue(resultOfOperationAsStr());
+                                    valueStrMemory = null; 
+                                    operatorMemory = null;
+            }
         }
-    } )
+    })
 }
-
-
-
 const setStrValue = (valueStr) => {
     if (valueStr[valueStr.length - 1 ] === '.'){
         valueEl.textContent += '.';
@@ -192,49 +214,28 @@ const setStrValue = (valueStr) => {
             valueEl.innerText = parseFloat(wholeNumStr).toLocaleString() + '.' + decimalStr; 
             }
                 else { 
-                valueEl.textContent = parseFloat(wholeNumStr).toLocaleString();
+                    valueEl.textContent = parseFloat(wholeNumStr).toLocaleString();
             }
 }
 
 
 let display = (numStr) => {
    let displayValue = getStrValue();
+ 
           if (displayValue === '0'){
-                setStrValue(numStr)
-            } 
-            // else if (displayValue.length > 9){
-            //         getStrValue().innerText = displayValue.substring(0, 9)
-            // }
-
-            else 
-            
-                      {
+               setStrValue(numStr);
+                
+            } else if(displayValue > 9){ 
+                setStrValue((displayValue+numStr).substring(0, 9))            
+            } else{ 
                 setStrValue(displayValue + numStr);
-            }  
-          
-}
+            }
+ }
 
 let roundUp = (num, places) => {
      return parseFloat(Math.round(num + 'e' + places) + 'e-' + places).toString();
 }
 
-//add eventlisteners to numbers
-for (let i = 0; i < numberElArray.length; i++){ 
-    const numberEl = numberElArray[i]; 
-    numberEl.addEventListener('click', () => {
-        display(i.toString());
-    } )
-}
-
-//add eventlistener to decimal
-
-decimalEl.addEventListener('click', () => { 
-    const displayValue = getStrValue(); 
-
-    if(!displayValue.includes('.')){
-        setStrValue(displayValue + '.');
-    }
-})
 //addeventlisteners to functions
   clear.addEventListener ('click', () => {
       setStrValue('0'); 
